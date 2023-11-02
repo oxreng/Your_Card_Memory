@@ -1219,6 +1219,12 @@ class Ui_Add_and_change_card(object):
         self.btn_event_card.setToolTip(_translate("Add_and_change_card", "Изменить карту в коллекции"))
         self.btn_event_card.setText(_translate("Add_and_change_card", "Добавить карту"))
 
+    def keyPressEvent(self, event):
+        if event.key() == 16777220 or event.key() == Qt.Key_Space:
+            self.btn_event_card.click()
+        elif event.key() == Qt.Key_Escape:
+            self.btn_cancel.click()
+
 
 class Ui_Card_amount(object):
     def setupUi(self, Card_amount):
