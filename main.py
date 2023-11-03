@@ -1023,8 +1023,9 @@ class Card_game_widget(QMainWindow, Ui_Card_game):
         true_cards = f"{', '.join(self.correct_cards)}"
         false_cards = f"{', '.join(self.incorrect_cards)}"
         current_date = datetime.now().strftime('Дата: %d.%m.%Y Время: %H:%M')
-        with open('databases/users_rating.csv', encoding="utf8", mode='a+') as f:
-            f.write(f'\n{self.user_id};"{self.collection}";"{true_cards}";"{false_cards}";"{current_date}"')
+        if false_cards + true_cards:
+            with open('databases/users_rating.csv', encoding="utf8", mode='a+') as f:
+                f.write(f'\n{self.user_id};"{self.collection}";"{true_cards}";"{false_cards}";"{current_date}"')
         self.con.close()
         event.accept()
 

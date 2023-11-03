@@ -96,6 +96,15 @@ QLineEdit:focus{
              <pointsize>11</pointsize>
             </font>
            </property>
+           <property name="mouseTracking">
+            <bool>true</bool>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
+           <property name="acceptDrops">
+            <bool>false</bool>
+           </property>
            <property name="text">
             <string>СТАРОЕ ИМЯ</string>
            </property>
@@ -117,6 +126,9 @@ QLineEdit:focus{
              <family>Open Sans Light</family>
              <pointsize>11</pointsize>
             </font>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::ClickFocus</enum>
            </property>
            <property name="text">
             <string>НОВОЕ ИМЯ</string>
@@ -189,6 +201,9 @@ background-color:rgb(153, 218, 51) ;}</string>
            <normaloff>photo_data/check_mark.png</normaloff>photo_data/check_mark.png</iconset>
          </property>
          <property name="autoDefault">
+          <bool>false</bool>
+         </property>
+         <property name="default">
           <bool>false</bool>
          </property>
         </widget>
