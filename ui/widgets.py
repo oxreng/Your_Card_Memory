@@ -1748,7 +1748,6 @@ class Ui_Delete_window(object):
             self.btn_cancel.click()
 
 
-# "    image: url(ui/photo_data/down_arrow_list.png);\n"
 class Ui_EndGame(object):
     def setupUi(self, EndGame):
         EndGame.setObjectName("EndGame")
@@ -2419,4 +2418,108 @@ class Ui_Help_menu(object):
         elif event.key() == Qt.Key_Right:
             self.btn_right.click()
         elif event.key() == Qt.Key_Escape:
+            self.btn_exit.click()
+
+
+class Ui_Dialog_statistics(object):
+    def setupUi(self, Dialog_statistics):
+        Dialog_statistics.setObjectName("Dialog_statistics")
+        Dialog_statistics.resize(310, 380)
+        Dialog_statistics.setMinimumSize(QtCore.QSize(310, 380))
+        Dialog_statistics.setFocusPolicy(QtCore.Qt.StrongFocus)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("ui/photo_data/statistics_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        Dialog_statistics.setWindowIcon(icon)
+        Dialog_statistics.setModal(False)
+        self.gridLayout = QtWidgets.QGridLayout(Dialog_statistics)
+        self.gridLayout.setContentsMargins(3, 3, 3, 3)
+        self.gridLayout.setObjectName("gridLayout")
+        self.verticalLayout = QtWidgets.QVBoxLayout()
+        self.verticalLayout.setSpacing(4)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.label_count_games = QtWidgets.QLabel(Dialog_statistics)
+        font = QtGui.QFont()
+        font.setFamily("Open Sans Light")
+        font.setPointSize(10)
+        self.label_count_games.setFont(font)
+        self.label_count_games.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.label_count_games.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_count_games.setObjectName("label_count_games")
+        self.verticalLayout.addWidget(self.label_count_games)
+        self.label_count_true_card = QtWidgets.QLabel(Dialog_statistics)
+        font = QtGui.QFont()
+        font.setFamily("Open Sans Light")
+        font.setPointSize(10)
+        self.label_count_true_card.setFont(font)
+        self.label_count_true_card.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_count_true_card.setObjectName("label_count_true_card")
+        self.verticalLayout.addWidget(self.label_count_true_card)
+        self.label_count_false_card = QtWidgets.QLabel(Dialog_statistics)
+        font = QtGui.QFont()
+        font.setFamily("Open Sans Light")
+        font.setPointSize(10)
+        self.label_count_false_card.setFont(font)
+        self.label_count_false_card.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_count_false_card.setObjectName("label_count_false_card")
+        self.verticalLayout.addWidget(self.label_count_false_card)
+        self.textBrowser_rating = QtWidgets.QTextBrowser(Dialog_statistics)
+        font = QtGui.QFont()
+        font.setFamily("Open Sans Light")
+        font.setPointSize(10)
+        font.setBold(False)
+        font.setWeight(50)
+        self.textBrowser_rating.setFont(font)
+        self.textBrowser_rating.setStyleSheet("QTextBrowser{border: 0px;}")
+        self.textBrowser_rating.setObjectName("textBrowser_rating")
+        self.verticalLayout.addWidget(self.textBrowser_rating)
+        self.btn_exit = QtWidgets.QPushButton(Dialog_statistics)
+        font = QtGui.QFont()
+        font.setFamily("Open Sans Light")
+        font.setPointSize(10)
+        self.btn_exit.setFont(font)
+        self.btn_exit.setStyleSheet("QPushButton {\n"
+                                    "background-color: rgb(225, 225, 225);\n"
+                                    "border: 1px solid #343155;\n"
+                                    "padding: 6px; border-radius: 10px;}\n"
+                                    "\n"
+                                    "QPushButton:hover, QPushButton:clicked { \n"
+                                    "background-color: rgb(208, 208, 208); \n"
+                                    "border: 1px solid rgb(225, 78, 78);}\n"
+                                    "QPushButton:pressed {\n"
+                                    "background-color:rgb(211, 79, 79);}")
+        icon1 = QtGui.QIcon()
+        icon1.addPixmap(QtGui.QPixmap("ui/photo_data/exit.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.btn_exit.setIcon(icon1)
+        self.btn_exit.setAutoDefault(False)
+        self.btn_exit.setObjectName("btn_exit")
+        self.verticalLayout.addWidget(self.btn_exit)
+        self.gridLayout.addLayout(self.verticalLayout, 0, 0, 1, 1)
+
+        self.retranslateUi(Dialog_statistics)
+        QtCore.QMetaObject.connectSlotsByName(Dialog_statistics)
+
+    def retranslateUi(self, Dialog_statistics):
+        _translate = QtCore.QCoreApplication.translate
+        Dialog_statistics.setWindowTitle(_translate("Dialog_statistics", "Статистика"))
+        self.label_count_games.setText(_translate("Dialog_statistics", "Количество игр всего: n"))
+        self.label_count_true_card.setText(_translate("Dialog_statistics", "Количество правильных карт: n"))
+        self.label_count_false_card.setText(_translate("Dialog_statistics", "Количество неправильных карт: n"))
+        self.textBrowser_rating.setHtml(_translate("Dialog_statistics",
+                                                   "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+                                                   "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+                                                   "p, li { white-space: pre-wrap; }\n"
+                                                   "</style></head><body style=\" font-family:\'Open Sans Light\'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
+                                                   "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"> Игра номер <span style=\" font-weight:600;\">{n}</span></p>\n"
+                                                   "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Коллекция: {имя коллекции}</p>\n"
+                                                   "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Правильные карты: {карты}</p>\n"
+                                                   "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Неправильные карты: {карты}</p>\n"
+                                                   "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Процент правильных ответов: {coeff}</p>\n"
+                                                   "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">{Дата и время}</p>\n"
+                                                   "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+                                                   "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+                                                   "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
+        self.btn_exit.setText(_translate("Dialog_statistics", " Выйти"))
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Escape or event.key() == 16777220:
             self.btn_exit.click()

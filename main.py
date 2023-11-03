@@ -3,6 +3,8 @@ import sqlite3
 import sys
 import os
 from random import choice
+from datetime import datetime
+import csv
 
 from PyQt5.QtGui import QPixmap, QImage, QIcon, QFontDatabase
 from PyQt5.QtWidgets import *
@@ -69,6 +71,16 @@ def check_login(login):
     return all([sym not in BAD_SYM for sym in login])
 
 
+def get_num(line):
+    return sum([1 if stro else 0 for stro in line.split(', ')])
+
+
+def check_date(date: str):
+    year = date.split('.')[2].split()[0]
+    print(year)
+    return False
+
+
 def html_get_to_profile(login):
     return "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n" \
            "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { " \
@@ -132,6 +144,37 @@ def html_get_to_card_game_text(text):
            "font-size:8.25pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; " \
            "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" " \
            f"font-size:11pt;\">{text}</span></p></body></html>"
+
+
+def html_get_to_statistics(collec_n, true_c, false_c, date_time, num_g, coeff):
+    if not true_c:
+        true_c = 'таких карт нет..'
+    if not false_c:
+        false_c = 'таких карт нет...'
+    return "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n" \
+           "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { " \
+           "white-space: pre-wrap;}\n</style></head><body style=\" font-family:\'Open Sans Light\'; " \
+           "font-size:10pt; font-weight:400; " \
+           "font-style:normal;\">\n<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; " \
+           "margin-right:0px; -qt-block-indent:0; text-indent:0px;\"> " \
+           f"Игра номер <span style=\" font-weight:600;\">{num_g}</span></p>\n<p style=\" " \
+           "margin-top:0px; margin-bottom:0px; " \
+           "margin-left:0px; margin-right:0px; -qt-block-indent:0; " \
+           f"text-indent:0px;\">Коллекция: {collec_n}" \
+           "</p>\n<p style=\" margin-top:0px; margin-bottom:0px; " \
+           "margin-left:0px; margin-right:0px; -qt-block-indent:0; " \
+           f"text-indent:0px;\">Правильные карты: {true_c}</p>\n<p style=\" " \
+           "margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; " \
+           f"-qt-block-indent:0; text-indent:0px;\">Неправильные карты: {false_c}</p>\n<p style=\" margin-top:0px; " \
+           "margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; " \
+           f"text-indent:0px;\">Процент правильных ответов: {coeff}</p>\n<p style=\" margin-top:0px; " \
+           "margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">" \
+           f"{date_time}</p>\n<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; " \
+           "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n<p style=\"" \
+           "-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; " \
+           "-qt-block-indent:0; text-indent:0px;\"><br /></p>\n<p style=\"-qt-paragraph-type:empty; " \
+           "margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; " \
+           "text-indent:0px;\"><br /></p></body></html>"
 
 
 def check_path(file_name):
@@ -247,6 +290,7 @@ class Collection_widget(QMainWindow, Ui_Collections_and_card_menu):
         self.btn_add_card.clicked.connect(self.add_card)
         self.btn_edit_collection.clicked.connect(self.edit_collection)
         self.cards_in_collection.itemDoubleClicked.connect(self.edit_card)
+        self.btn_statistics.clicked.connect(self.show_stat)
         self.btn_start_game.clicked.connect(self.start_game)
         self.btn_del_card.clicked.connect(self.del_card)
         self.action.triggered.connect(self.open_help)
@@ -255,6 +299,10 @@ class Collection_widget(QMainWindow, Ui_Collections_and_card_menu):
         self.statusbar.setStyleSheet('color: red;')
         self.setWindowModality(Qt.ApplicationModal)
         self.update_list(self.collection)
+
+    def show_stat(self):
+        self.dialog = Statistics_widget(self, self.user_id)
+        self.dialog.exec_()
 
     def update_coll(self, collection=''):
         if collection:
@@ -397,6 +445,8 @@ class Add_collection_widget(QDialog, Ui_Collection_add):
             self.collection = self.lineEdit_collection_name.text()
             if not len(self.collection.strip()):
                 raise KeyboardInterrupt
+            if ',' in self.collection or '"' in self.collection:
+                raise SyntaxError
             collections_names = [str(line[0]) for line in
                                  self.parent.con.cursor().execute("""SELECT title FROM collections WHERE user_id = ?""",
                                                                   (self.parent.user_id,))]
@@ -412,6 +462,8 @@ class Add_collection_widget(QDialog, Ui_Collection_add):
             self.label_error.setText('Ошибка! Коллекция с таким именем уже есть!')
         except KeyboardInterrupt:
             self.label_error.setText('Ошибка! Название коллекции не должно быть пустым!')
+        except SyntaxError:
+            self.label_error.setText('В названии коллекции не должно быть , и "')
 
     def exit(self):
         self.close()
@@ -433,6 +485,8 @@ class Rename_collection_widget(QDialog, Ui_Rename_collection):
             new_name = str(self.lineEdit_new.text())
             if not len(new_name.strip()):
                 raise KeyboardInterrupt
+            if ',' in new_name or '"' in new_name:
+                raise SyntaxError
             if self.parent.collection == new_name:
                 raise ValueError
             collections_names = [str(line[0]) for line in
@@ -454,6 +508,8 @@ class Rename_collection_widget(QDialog, Ui_Rename_collection):
             self.label_error.setText('Ошибка! Название коллекции не должно быть пустым!')
         except ValueError:
             self.label_error.setText('Ошибка! Название коллекции не должно совпадать со старым!')
+        except SyntaxError:
+            self.label_error.setText('В названии коллекции не должно быть , и "')
 
     def exit(self):
         self.close()
@@ -655,6 +711,8 @@ class Add_and_edit_card_widget(QDialog, Ui_Add_and_change_card):
             card_name = str(self.lineEdit_card_name.text())
             if not card_name.strip():
                 raise KeyboardInterrupt
+            if ',' in card_name or '"' in card_name:
+                raise SyntaxError
             cards = [str(line[0]) for line in
                      self.parent.con.cursor().execute(
                          """SELECT card_title FROM cards WHERE user_id = ? AND col_id = ?""",
@@ -663,7 +721,9 @@ class Add_and_edit_card_widget(QDialog, Ui_Add_and_change_card):
                 raise KeyError
             if type_of_card == 'Текст -> Текст':
                 if self.mode == 'edit':
-                    delete_photos([self.fdirectory_back_old.split('/')[-1], self.fdirectory_front_old.split('/')[-1]])
+                    if not (self.fdirectory_back_old is None) and not (self.fdirectory_front_old is None):
+                        delete_photos(
+                            [self.fdirectory_back_old.split('/')[-1], self.fdirectory_front_old.split('/')[-1]])
                 data_front, data_back = self.textEdit_front.toPlainText(), self.textEdit_back.toPlainText()
                 if not data_back.strip() or not data_front.strip():
                     raise IndexError
@@ -752,6 +812,8 @@ class Add_and_edit_card_widget(QDialog, Ui_Add_and_change_card):
             self.label_error.setText('Название карты не должно быть пустым!')
         except KeyError:
             self.label_error.setText('Такое название карты уже есть!')
+        except SyntaxError:
+            self.label_error.setText('В названии карты не должно быть " и ,')
         except IndexError:
             self.label_error.setText('Текст в карточках не должен быть пустым!')
         except TypeError:
@@ -821,6 +883,8 @@ class Card_game_widget(QMainWindow, Ui_Card_game):
         self.corr_cards = 0
         self.widget = None
         self.now_card = None
+        self.correct_cards, self.incorrect_cards = [], []
+        self.flag = False
         self.con = sqlite3.connect('databases/data')
         self.user_id = self.con.cursor().execute("""SELECT id FROM users WHERE login = ?""", (self.login,)).fetchone()[
             0]
@@ -861,19 +925,29 @@ class Card_game_widget(QMainWindow, Ui_Card_game):
         else:
             self.update_card_rating(self.sender())
             self.con.close()
+            self.flag = True
             self.widget = End_game_widget(self, self.login, self.collection, self.cards_num, self.corr_cards)
             self.widget.show()
             self.close()
 
+    def save_score(self):
+        true_cards = f"{', '.join(self.correct_cards)}"
+        false_cards = f"{', '.join(self.incorrect_cards)}"
+        current_date = datetime.now().strftime('Дата: %d.%m.%Y Время: %H:%M')
+        with open('databases/users_rating.csv', encoding="utf8", mode='a+') as f:
+            f.write(f'\n{self.user_id};"{self.collection}";"{true_cards}";"{false_cards}";"{current_date}"')
+
     def update_card_rating(self, from_who):
         rate = self.now_card[-1]
         if from_who == self.btn_remember:
+            self.correct_cards.append(self.now_card[-2])
             if rate == -1:
                 self.request_to_db((5, self.user_id, self.collection_id, self.now_card[-2]))
             else:
                 self.request_to_db((min(10, rate + 1), self.user_id, self.collection_id, self.now_card[-2]))
             self.corr_cards += 1
         else:
+            self.incorrect_cards.append(self.now_card[-2])
             if rate == -1:
                 self.request_to_db((3, self.user_id, self.collection_id, self.now_card[-2]))
             else:
@@ -926,8 +1000,14 @@ class Card_game_widget(QMainWindow, Ui_Card_game):
         self.btn_remember.setVisible(True)
         self.btn_forgot.setVisible(True)
 
+    def closeEvent(self, event, **kwargs):
+        self.save_score()
+        event.accept()
+
     def exit(self):
         self.con.close()
+        if not self.flag:
+            self.save_score()
         self.widget = Collection_widget(self, self.login, self.collection)
         self.widget.show()
         self.close()
@@ -998,6 +1078,39 @@ class Help_widget(QDialog, Ui_Help_menu):
         else:
             self.label_about_what.setText('Просмотр и изменение карточек')
         self.stackedWidget_help.setCurrentIndex(self.index)
+
+    def exit(self):
+        self.close()
+
+
+class Statistics_widget(QDialog, Ui_Dialog_statistics):
+    def __init__(self, parent=None, user_id=''):
+        super().__init__()
+        self.parent = parent
+        self.user_id = user_id
+        self.setupUi(self)
+        self.btn_exit.clicked.connect(self.exit)
+        self.update_all()
+
+    def update_all(self):
+        with open('databases/users_rating.csv', encoding="utf8") as csvfile:
+            reader = csv.reader(csvfile, delimiter=';', quotechar='"')
+            data = list(filter(lambda x: x[0] == str(self.user_id), reader))
+        if not len(data):
+            n, t, f = 0, 0, 0
+            self.textBrowser_rating.setText('Вы ещё не сыграли ни одной игры! Скорее пробуйте!')
+        else:
+            n, t, f = len(data), sum([1 if card else 0 for line in data for card in line[2].split(', ')]), sum(
+                [1 if card else 0 for line in data for card in line[3].split(', ')])
+            html_text = [html_get_to_statistics(*line[1:], n,
+                                                round((get_num(line[2]) / (get_num(line[2]) + get_num(line[3]))) * 100))
+                         for n, line in enumerate(sorted(data, key=lambda x: (
+                            int(x[-1].split('.')[2].split()[0]), int(x[-1].split('.')[1]),
+                            int(x[-1].split('.')[0].split()[1]), int(''.join(x[-1].split(':')[-2:])))), 1)]
+            self.textBrowser_rating.setHtml(''.join(html_text[::-1]))
+        self.label_count_games.setText(f'Количество игр всего: {n}')
+        self.label_count_true_card.setText(f'Количество правильных карт: {t}')
+        self.label_count_false_card.setText(f'Количество неправильных карт: {f}')
 
     def exit(self):
         self.close()
