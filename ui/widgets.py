@@ -2538,3 +2538,5 @@ class Ui_Dialog_statistics(object):
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Escape or event.key() == 16777220:
             self.btn_exit.click()
+
+
